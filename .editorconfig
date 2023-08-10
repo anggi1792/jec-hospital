@@ -1,0 +1,15 @@
+# Declares that this is the top-level configuration
+root = true
+
+# Applies to all files
+[*]
+insert_final_newline =  = true
+charset = utf-8
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Applies to all Go file
+[{Makefile, go.mod, go.sum, *.go}]
+indent_style = tab
+indent_size = 4

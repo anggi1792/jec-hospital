@@ -2,19 +2,18 @@ package main
 
 import (
 	"log"
+	"net"
 
 	"github.com/anggi1792/jec-hospital/domain/hospital"
-	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
-
 	dbs "github.com/anggi1792/jec-hospital/pkg/jecconfiguration"
 	tools "github.com/anggi1792/jec-hospital/pkg/jectools"
-	customvalidator "github.com/anggi1792/jec-hospital/pkg/jecvalidator"
+	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 )
 
 func main() {
 	//  Load Environtment
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Get Environtment Failed :%v", err)
 	}
@@ -28,7 +27,6 @@ func main() {
 		Dbpassword: tools.GetEnv("POSTGRES_PASSWORD"),
 		Sslmode:    tools.GetEnv("POSTGRES_SSLMODE"),
 	})
-
 	if err != nil {
 		panic(err)
 	}
@@ -38,33 +36,18 @@ func main() {
 	}
 	log.Println("Database [" + tools.GetEnv("POSTGRES_DBNAME") + "] Postgree Connected!")
 
-	//  Fiber Framework Initial
-	app := fiber.New(
-		fiber.Config{
-			ErrorHandler: customvalidator.HttpErrorHandler,
-		},
-	)
+	srv := grpc.NewServer()
+	hospital.RouterInitGRPC(srv, dbConn)
 
-	hospital.RouterInitWithDB(app, dbConn)
-
-	log.Println("Hospital API Services Running at port " + tools.GetEnv("BASE_PORT"))
-	app.Listen(tools.GetEnv("BASE_PORT"))
-}
-
-/*
-    ? OUTPUT :
-    ? =====================================
-
-{
-    "data": {
-        var oHospital = hospital.HospitalProto{
-		HealthcareId:   "001",
-		HealthcareName: "Jec @ Kedoya",
-		IsActive:       true,
-		UserCreate:     "Anggi",
-		CreateAt:       dtNowProto,
+	log.Println("Registered GRPC Route ...")
+	listen, err := net.Listen("tcp", tools.GetEnv("GRPC_PORT"))
+	if err != nil {
+		panic(err)
 	}
-    },
-    "message": "Create Hospital has been successfully!",
-    "status": 201
-} */
+
+	log.Println("Hospital GRPC Server Running at port ", tools.GetEnv("GRPC_PORT"))
+	err = srv.Serve(listen)
+	if err != nil {
+		panic(err)
+	}
+}

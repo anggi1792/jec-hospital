@@ -17,7 +17,8 @@ message HospitalListProto {
     repeated HospitalProto hospitals = 1;
 }
 
-// [Respon] Get Hospital 
+
+// [Respon] Get Hospital
 message HospitalProto {
     string healthcare_id = 1;
     string healthcare_name = 2;
@@ -28,7 +29,7 @@ message HospitalProto {
 
 }
 
-// Get Hospital based on Healthcare ID 
+// Get Hospital based on Healthcare ID
 message HospitalGetProto {
     string healthcare_id = 1;
 }
@@ -39,14 +40,15 @@ message HospitalAddProto {
 }
 
 
+
 // #endregion end of Hospital Message Proto
 
 // #region Hospital Service
 
 service HospitalService {
     rpc List(google.protobuf.Empty) returns (HospitalListProto) {}
-    rpc Get(HospitalGetProto) returns (HospitalProto) {}    
-    rpc Add(HospitalAddProto) returns (HospitalProto) {}     
+    rpc Get(HospitalGetProto) returns (HospitalProto) {}
+    rpc Add(HospitalAddProto) returns (HospitalProto) {}
 }
 
 // #endregion end of Hospital Service

@@ -8,3 +8,12 @@
 # protoc --go_out=. ./domain/hospital/proto/*.proto
 <!-- ! Generate Proto GRPC -->
 # protoc --go_out=. ./domain/hospital/proto/*.proto --go-grpc_out=.
+
+
+<!-- Step -->
+# 0. hospital [Entity]
+# 1. hospitalDto [Dto]
+# 2. hospitalHandler
+
+# 3. hospitalService
+# 4. hospitalRepository [Connect to Database]
