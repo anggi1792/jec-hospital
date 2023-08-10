@@ -17,3 +17,6 @@
 
 # 3. hospitalService
 # 4. hospitalRepository [Connect to Database]
+
+
+docker build -t 172.16.80.157/hacktiv8-final-project/h_service_hospital:v0.0.1 -f deploy/docker/grpc/Dockerfile .
