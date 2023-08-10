@@ -18,26 +18,45 @@ func main() {
 	// 	log.Println("Get Environtment Failed :%v", err)
 	// }
 
-	//  Database Initial
-	dbConn, err := dbs.ConnectSqlx(dbs.DbConfiguration{
+	//  Database Initial Hospital
+	dbConnHospital, err := dbs.ConnectSqlx(dbs.DbConfiguration{
 		Host:       tools.GetEnv("POSTGRES_HOST"),
 		Port:       tools.GetEnv("POSTGRES_PORT"),
-		Dbname:     tools.GetEnv("POSTGRES_DBNAME"),
+		Dbname:     tools.GetEnv("POSTGRES_DBNAME_Hospital"),
 		Dbuser:     tools.GetEnv("POSTGRES_USER"),
 		Dbpassword: tools.GetEnv("POSTGRES_PASSWORD"),
 		Sslmode:    tools.GetEnv("POSTGRES_SSLMODE"),
 	})
+
+	//  Database Initial Paramedic
+	dbConnParamedics, err := dbs.ConnectSqlx(dbs.DbConfiguration{
+		Host:       tools.GetEnv("POSTGRES_HOST"),
+		Port:       tools.GetEnv("POSTGRES_PORT"),
+		Dbname:     tools.GetEnv("POSTGRES_DBNAME_PARAMEDICS"),
+		Dbuser:     tools.GetEnv("POSTGRES_USER"),
+		Dbpassword: tools.GetEnv("POSTGRES_PASSWORD"),
+		Sslmode:    tools.GetEnv("POSTGRES_SSLMODE"),
+	})
+
 	if err != nil {
 		panic(err)
 	}
 
-	if dbConn == nil {
-		panic("Database [" + tools.GetEnv("POSTGRES_DBNAME") + "] Postgree Not Connected!")
+	if dbConnHospital == nil {
+		panic("Database [" + tools.GetEnv("POSTGRES_DBNAME_Hospital") + "] Postgree Not Connected!")
 	}
-	log.Println("Database [" + tools.GetEnv("POSTGRES_DBNAME") + "] Postgree Connected!")
+	log.Println("Database [" + tools.GetEnv("POSTGRES_DBNAME_Hospital") + "] Postgree Connected!")
 
 	srv := grpc.NewServer()
-	hospital.RouterInitGRPC(srv, dbConn)
+	hospital.RouterInitGRPC(srv, dbConnHospital)
+
+	if dbConnParamedics == nil {
+		panic("Database [" + tools.GetEnv("POSTGRES_DBNAME_PARAMEDICS") + "] Postgree Not Connected!")
+	}
+	log.Println("Database [" + tools.GetEnv("POSTGRES_DBNAME_PARAMEDICS") + "] Postgree Connected!")
+
+	srvParamedic := grpc.NewServer()
+	hospital.RouterInitGRPC(srvParamedic, dbConnParamedics)
 
 	log.Println("Registered GRPC Route ...")
 	listen, err := net.Listen("tcp", tools.GetEnv("GRPC_PORT"))
@@ -47,6 +66,11 @@ func main() {
 
 	log.Println("Hospital GRPC Server Running at port ", tools.GetEnv("GRPC_PORT"))
 	err = srv.Serve(listen)
+	if err != nil {
+		panic(err)
+	}
+
+	err = srvParamedic.Serve(listen)
 	if err != nil {
 		panic(err)
 	}
