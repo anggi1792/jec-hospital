@@ -14,9 +14,9 @@ import (
 func main() {
 	//  Load Environtment
 	err := godotenv.Load(".env")
-	if err != nil {
-		log.Println("Get Environtment Failed :%v", err)
-	}
+	// if err != nil {
+	// 	log.Println("Get Environtment Failed :%v", err)
+	// }
 
 	//  Database Initial
 	dbConn, err := dbs.ConnectSqlx(dbs.DbConfiguration{
