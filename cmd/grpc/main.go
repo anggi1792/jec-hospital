@@ -15,7 +15,7 @@ func main() {
 	//  Load Environtment
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Get Environtment Failed :%v", err)
+		log.Println("Get Environtment Failed :%v", err)
 	}
 
 	//  Database Initial

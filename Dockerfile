@@ -1,24 +1,18 @@
-#Base Image
-FROM golang AS builder
+FROM golang:alpine as builder
 
-# Working Directory
 WORKDIR /app
 
-#copy all fie
 COPY . .
 
-#running comment
-RUN CGO_ENABLE=0 GOOS=linux go build -o main ./cmd/grpc/main.go
+RUN go build -o app cmd/grpc/main.go
 
 FROM scratch
 
 WORKDIR /app
 
-COPY --from=builder /app/main .
+COPY --from=builder /app/app .
 
-
-
-CMD ["./main"]
+CMD [ "./app" ]
 
 # bild image
 # docker build -t <nama_image:tag>.
